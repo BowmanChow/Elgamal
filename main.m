@@ -10,6 +10,7 @@ msg_rec = 'message_recieve.txt';
 python_cmd = 'python3';
 enc_bit_len = 54;
 
+
 f_msg = fopen(msg_file, 'w');
 fprintf(f_msg, '%d', message);
 fclose(f_msg);
@@ -19,6 +20,11 @@ system([python_cmd,' -c "from Elgamal_file import *; Elgamal_gen_key_file(''',se
 system([python_cmd,' -c "from Elgamal_file import *; Elgamal_encrypt_file(''',msg_file,''',''',pub_file,''',''',enc_sen_file,''')" '])
 
 encrypted = send_encrypted(enc_sen_file);
+
+%% interrupt
+pos = randi([1,size(encrypted,2)]);
+encrypted(pos) = ~(encrypted(pos) - '0') + '0';
+%%
 
 recieve_encrypted(encrypted, enc_rec_file, enc_bit_len);
 
@@ -30,5 +36,10 @@ msg_rec = msg_rec{1};
 msg_char = num2str(message);
 msg_char = strrep(msg_char, ' ', '');
 
+if size(msg_rec,2) < size(msg_char,2)
+    msg_char = msg_char(1:size(msg_rec,2));
+elseif size(msg_char,2) < size(msg_rec,2)
+    msg_rec = msg_rec(1:size(msg_char,2));
+end
 error_bit = sum(msg_char ~= msg_rec);
 
